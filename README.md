@@ -16,4 +16,6 @@ This is a derivative of the Streamlit ReadV2 application posted as separate appl
 
 6/1/2025 Animation of displacements in 3D added.
 
+6/27/2025 ASC, miniSEED and fullSEED option for file input added - sample files included in repo.
+
 Try out at https://freefieldseismicviewer-5n9hjoluis8fcmy4d7d3wh.streamlit.app/
