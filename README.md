@@ -16,4 +16,4 @@ This is a derivative of the Streamlit ReadV2 application posted as separate appl
 
 6/1/2025 Animation of displacements in 3D added.
 
-Try out at https://appreadv2-8tcju9gckv5rnfcrja59nj.streamlit.app/
+Try out at https://freefieldseismicviewer-5n9hjoluis8fcmy4d7d3wh.streamlit.app/
