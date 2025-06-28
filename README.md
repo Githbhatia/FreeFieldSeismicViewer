@@ -1,4 +1,4 @@
-Read and plot ASC or [miniSeed, xml pair] or [fullSeed, xml pair] files . The code can also be used to view free field instrument records on the AFAD site in Turkey . Python code reads a zip file containing ASC or [miniSeed, xml pair] or [fullSeed, xml pair]  files that contains three channels (Free-Field instruments have 3 channels)
+Read and plot ASC or [miniSeed, xml pair] or [fullSeed, xml pair] files . The code can also be used to view free field instrument records available on the AFAD site in Turkey. US seismic instruments use V2 or V2c formats, see separate repo at https://github.com/Githbhatia/Streamlit_ReadV2. Python code reads a zip file containing ASC or [miniSeed, xml pair] or [fullSeed, xml pair]  files that contains three channels (Free-Field instruments have 3 channels).
 
 This is a derivative of the Streamlit ReadV2 application posted as separate application.  
 
