@@ -14,38 +14,7 @@ import scipy.integrate as it
 from obspy import read as obspy_read
 from obspy import read_inventory
 
-@st.cache_data
-def readFileV2c(_f, f_name):
-    for line in islice(f, 1, 2):   
-        recTime = line[10:].strip()
-        # print(recTime)
-    for line in islice(f, 0, 1):
-        hypocenter = line[11:].strip()
-        # print(hypocenter)
-    for line in islice(f, 5, 6):
-        nameCh=f_name[:f_name.find(".V2c")-7] + " " +line[13:37].strip()
-    # print(nameCh)
-    for line in islice(f, 15, 16):
-        headerPoints = int(line[:5].strip())
-        headerLines = int(line[line.find("lines")-4:line.find("lines")].strip())
-    # print(headerPoints); print(headerLines)
-    header = readchunk15(f,headerLines)
-    # print(header)
-    latitude = header[0]
-    longitude = header[1]
-    # print(latitude, longitude)
-    dt = header[33]
-    # print(dt)
-    for line in islice(f, 0, 1):
-        commentLines = int(line[:5].strip())
-    for line in islice(f, commentLines, commentLines+1):
-        numofPoints =int(line[:9].strip())
-    # print(numofPoints)
-    accel = readchunk15(f,numofPoints)
-    # print(accel)
-    f.close()
 
-    return recTime,hypocenter,latitude,longitude,nameCh,dt,numofPoints,accel
 
 def chunkstring20(string, length):
     return (float(string[0+i:length+i]) for i in range(0, len(string), length))
@@ -76,11 +45,15 @@ def readchunk(f, numofLines):
         x = x + list(chunkstring10(line[0:len(line)-1], 10))
     #print(x)
     return x
+
 def scaleValue(units):
-    if units =="cm/s^2":
+    if units =="cm/s^2" or units =="cm/sec^2":
         return 1/980.665
+    elif units =="m/s^2":
+        return 1/9.80665 
     else:
         return 1.0
+    
 def lines(points):
     if points % 8 == 0:
         nLines = int(points/8) 
@@ -551,8 +524,8 @@ def d3animate():
     global arate
     arate = 1
     
-    if "Up" in nameCh1 or "HNZ" in nameCh1:
-        if "360" in nameCh2 or "180" in nameCh2:
+    if "Up" in nameCh1 or "HNZ" in nameCh1 or "HHZ" in nameCh1:
+        if "360" in nameCh2 or "180" in nameCh2 or "HNN" in nameCh2 or "HHN" in nameCh2:
             xa = scaledAccel3.copy(); ya = scaledAccel2.copy(); za = scaledAccel1.copy()
             xv = vel3.copy(); yv = vel2.copy(); zv = vel1.copy()
             x = displ3.copy(); y = displ2.copy(); z = displ1.copy()
@@ -562,8 +535,8 @@ def d3animate():
             xv = vel2.copy(); yv = vel3.copy(); zv = vel1.copy()
             x = displ2.copy(); y = displ2.copy(); z = displ1.copy()
             xRec=nameCh2;yRec=nameCh3;zRec=nameCh1
-    elif "Up" in nameCh2 or "HNZ" in nameCh2:
-        if "360" in nameCh1 or "180" in nameCh1:
+    elif "Up" in nameCh2 or "HNZ" in nameCh2 or "HHZ" in nameCh2:
+        if "360" in nameCh1 or "180" in nameCh1 or "HNN" in nameCh1 or "HHN" in nameCh1:
             xa = scaledAccel3.copy(); ya = scaledAccel1.copy(); za = scaledAccel2.copy()
             xv = vel3.copy(); yv = vel1.copy(); zv = vel2.copy()
             x = displ3.copy(); y = displ1.copy(); z = displ2.copy()
@@ -574,8 +547,8 @@ def d3animate():
             x = displ1.copy(); y = displ3.copy(); z = displ2.copy()
             xRec=nameCh1;yRec=nameCh3;zRec=nameCh2
 
-    elif "Up" in nameCh3 or "HNZ" in nameCh3:
-        if "360" in nameCh1 or "180" in nameCh1:
+    elif "Up" in nameCh3 or "HNZ" in nameCh3 or "HHZ" in nameCh3:
+        if "360" in nameCh1 or "180" in nameCh1 or "HNN" in nameCh1 or "HHN" in nameCh1:
             xa = scaledAccel2.copy(); ya = scaledAccel1.copy(); za = scaledAccel3.copy()
             xv = vel2.copy(); yv = vel1.copy(); zv = vel3.copy()
             x = displ2.copy(); y = displ1.copy(); z = displ3.copy()
@@ -635,17 +608,19 @@ def d3animate():
         ax['B'].set_ylabel("Accel (g)")
         ax['C'].set_ylabel("Accel (g)")
         ax['D'].set_ylabel("Accel (g)")
+        yaxislimit = round(accelim(xa, ya, za)*1.1,3)
+        nyaxislimit = 0.0 - yaxislimit
     elif anioption =="Vel":
         ax['B'].set_ylabel("Vel (cm/sec)")
         ax['C'].set_ylabel("Vel (cm/sec)")
         ax['D'].set_ylabel("Vel (cm/sec)")
-        yaxislimit = round(accelim(xv, yv, zv)*1.1,2)
+        yaxislimit = round(accelim(xv, yv, zv)*1.1,3)
         nyaxislimit = 0.0 - yaxislimit
     else:
         ax['B'].set_ylabel("Disp (cm)")
         ax['C'].set_ylabel("Disp (cm)")
         ax['D'].set_ylabel("Disp (cm)")
-        yaxislimit = round(accelim(x, y, z)*1.1,2)
+        yaxislimit = round(accelim(x, y, z)*1.1,3)
         nyaxislimit = 0.0 - yaxislimit
 
     ax['B'].set_ylim([nyaxislimit, yaxislimit])
@@ -916,6 +891,9 @@ if filenames != None:
         accel1 =f[0].remove_response(inventory=inv, output="ACC", pre_filt=(0.1, 0.2, 50.0, 55.0))
         accel2 = f[1].remove_response(inventory=inv, output="ACC", pre_filt=(0.1, 0.2, 50.0, 55.0))
         accel3 = f[2].remove_response(inventory=inv, output="ACC", pre_filt=(0.1, 0.2, 50.0, 55.0))
+        accel1 = np.array(accel1) *100 # Convert to cm/s^2
+        accel2 = np.array(accel2) *100 # Convert to cm/s^2
+        accel3 = np.array(accel3) *100 # Convert to cm/s^2
         nameCh1 = f[0].stats.channel
         nameCh2 = f[1].stats.channel
         nameCh3 = f[2].stats.channel
@@ -925,9 +903,9 @@ if filenames != None:
         hypoLatitude = inv[0][0].latitude
         hypoLongitude = inv[0][0].longitude
         stationNo = inv[0][0].code
-        unitsAccel1 = "cm/sec^2"
-        unitsAccel2 = "cm/sec^2"
-        unitsAccel3 = "cm/sec^2"
+        unitsAccel1 = "cm/s^2"
+        unitsAccel2 = "cm/s^2"
+        unitsAccel3 = "cm/s^2"
         dtAccel1 = f[0].stats.delta
         dtAccel2 = f[1].stats.delta
         dtAccel3 = f[2].stats.delta
