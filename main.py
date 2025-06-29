@@ -891,9 +891,7 @@ if filenames != None:
         accel1 =f[0].remove_response(inventory=inv, output="ACC", pre_filt=(0.1, 0.2, 50.0, 55.0))
         accel2 = f[1].remove_response(inventory=inv, output="ACC", pre_filt=(0.1, 0.2, 50.0, 55.0))
         accel3 = f[2].remove_response(inventory=inv, output="ACC", pre_filt=(0.1, 0.2, 50.0, 55.0))
-        accel1 = np.array(accel1) *100 # Convert to cm/s^2
-        accel2 = np.array(accel2) *100 # Convert to cm/s^2
-        accel3 = np.array(accel3) *100 # Convert to cm/s^2
+
         nameCh1 = f[0].stats.channel
         nameCh2 = f[1].stats.channel
         nameCh3 = f[2].stats.channel
@@ -903,9 +901,7 @@ if filenames != None:
         hypoLatitude = inv[0][0].latitude
         hypoLongitude = inv[0][0].longitude
         stationNo = inv[0][0].code
-        unitsAccel1 = "cm/s^2"
-        unitsAccel2 = "cm/s^2"
-        unitsAccel3 = "cm/s^2"
+
         dtAccel1 = f[0].stats.delta
         dtAccel2 = f[1].stats.delta
         dtAccel3 = f[2].stats.delta
@@ -915,6 +911,13 @@ if filenames != None:
         accel1 = accel1.data.tolist()
         accel2 = accel2.data.tolist()
         accel3 = accel3.data.tolist()
+        accel1 = [x * 100 for x in accel1] # Convert to cm/s^2
+        accel2 = [x * 100 for x in accel2] # Convert to cm/s^2
+        accel3 = [x * 100 for x in accel3] # Convert to cm/s^2
+        unitsAccel1 = "cm/s^2"
+        unitsAccel2 = "cm/s^2"
+        unitsAccel3 = "cm/s^2"
+
         EOF = 0
         hypocenter = ""
     
@@ -995,9 +998,9 @@ if filenames != None:
 
 
     c1, c2 =st.columns(2)
-    with c1:
-        if stationNo != 0 and stationNo.isnumeric():
-            st.link_button("See Instrument Details", 'https://www.strongmotioncenter.org/cgi-bin/CESMD/stationhtml.pl?stationID=CE'+stationNo+'&network=CGS')  
+    # with c1:
+    #     if stationNo != 0 and stationNo.isnumeric():
+            # st.link_button("See Instrument Details", 'https://www.strongmotioncenter.org/cgi-bin/CESMD/stationhtml.pl?stationID=CE'+stationNo+'&network=CGS')  
     with c2:
         st.link_button("See location of instrument in Google Maps", 'http://www.google.com/maps/place/'+ str(latitude) +','+str(longitude)+'/@'+ str(latitude) +','+str(longitude)+',12z')
     st.subheader("Recorded Values")
