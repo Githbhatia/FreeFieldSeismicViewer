@@ -18,4 +18,6 @@ This is a derivative of the Streamlit ReadV2 application posted as separate appl
 
 6/27/2025 ASC, miniSEED and fullSEED option for file input added - sample files included in repo.
 
+6/28/2025 - corrected units - obspy works in m/s^2 !!
+
 Try out at https://freefieldseismicviewer-5n9hjoluis8fcmy4d7d3wh.streamlit.app/
